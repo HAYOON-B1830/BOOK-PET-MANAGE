@@ -79,6 +79,7 @@ public class BookAMD extends JFrame implements ActionListener {
 
 		connect();
 		count();
+
 		JLabel cntLabel = new JLabel("(총 도서수 : " + cnt + "권)");
 		cntLabel.setFont(new Font("굴림", Font.PLAIN, 13));
 		cntLabel.setBounds(39, 436, 135, 15);
@@ -188,12 +189,12 @@ public class BookAMD extends JFrame implements ActionListener {
 			}
 		});
 
-//		searchbtn.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				connect();
-//				search();
-//			}
-//		});
+		searchbtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				connect();
+				search();
+			}
+		});
 
 		////////////////////////////////////////////////////////
 		/* 테이블 */
@@ -487,14 +488,19 @@ public class BookAMD extends JFrame implements ActionListener {
 		}
 	}
 
+	/////////////////////////////////////////////////
+
 	// *버튼 누르면 검색결과 나옴*//
 	public void search() {
-		try {
+		/* 도서명으로 검색 */
+		try
+
+		{
 			// 실행할 sql문장 작성
 			model.setNumRows(0);
-			String searchStr = "select * from books WHERE BOOK_TITLE LIKE '%" + titleText.getText() + "%'";
-			stmt = con.prepareStatement(searchStr);
-			result = stmt.executeQuery(searchStr);
+			String title_searchStr = "select * from books WHERE BOOK_TITLE LIKE '%" + titleText.getText() + "%'";
+			stmt = con.prepareStatement(title_searchStr);
+			result = stmt.executeQuery(title_searchStr);
 
 			// books테이블에서 불러오기
 			while (result.next()) {
@@ -513,6 +519,83 @@ public class BookAMD extends JFrame implements ActionListener {
 		} catch (Exception e) {
 			System.out.println("search() 실행오류 : " + e);
 		}
+//		/* 번호로 검색 */
+//		try {
+//			// 실행할 sql문장 작성
+//			model.setNumRows(0);
+//			String no_searchStr = "select * from books WHERE BOOK_NO LIKE '%" + noText.getText() + "%'";
+//			stmt = con.prepareStatement(no_searchStr);
+//			result = stmt.executeQuery(no_searchStr);
+//
+//			// books테이블에서 불러오기
+//			while (result.next()) {
+//				String no = result.getString("BOOK_NO");
+//				String title = result.getString("BOOK_TITLE");
+//				String author = result.getString("AUTHOR");
+//				String publisher = result.getString("PUBLISHER");
+//				String year = result.getString("PUBLISHER_YEAR");
+//
+//				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
+//				Object data[] = { no, title, author, publisher, year };
+//				model.addRow(data);
+//				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year);// 콘솔출력
+//
+//			}
+//		} catch (Exception e) {
+//			System.out.println("search() 실행오류 : " + e);
+//		}
+
+//		/* 작가로 검색 */
+//		try {
+//			// 실행할 sql문장 작성
+//			model.setNumRows(0);
+//			String author_searchStr = "select * from books WHERE AUTHOR LIKE '%" + authorText.getText() + "%'";
+//			stmt = con.prepareStatement(author_searchStr);
+//			result = stmt.executeQuery(author_searchStr);
+//
+//			// books테이블에서 불러오기
+//			while (result.next()) {
+//				String no = result.getString("BOOK_NO");
+//				String title = result.getString("BOOK_TITLE");
+//				String author = result.getString("AUTHOR");
+//				String publisher = result.getString("PUBLISHER");
+//				String year = result.getString("PUBLISHER_YEAR");
+//
+//				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
+//				Object data[] = { no, title, author, publisher, year };
+//				model.addRow(data);
+//				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year);// 콘솔출력
+//
+//			}
+//		} catch (Exception e) {
+//			System.out.println("search() 실행오류 : " + e);
+//		}
+//
+//		/* 출판사로 검색 */
+//		try {
+//			// 실행할 sql문장 작성
+//			model.setNumRows(0);
+//			String publisher_searchStr = "select * from books WHERE PUBLISHER LIKE '%" + publisherText.getText() + "%'";
+//			stmt = con.prepareStatement(publisher_searchStr);
+//			result = stmt.executeQuery(publisher_searchStr);
+//
+//			// books테이블에서 불러오기
+//			while (result.next()) {
+//				String no = result.getString("BOOK_NO");
+//				String title = result.getString("BOOK_TITLE");
+//				String author = result.getString("AUTHOR");
+//				String publisher = result.getString("PUBLISHER");
+//				String year = result.getString("PUBLISHER_YEAR");
+//
+//				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
+//				Object data[] = { no, title, author, publisher, year };
+//				model.addRow(data);
+//				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year);// 콘솔출력
+//
+//			}
+//		} catch (Exception e) {
+//			System.out.println("search() 실행오류 : " + e);
+//		}
 
 	}
 

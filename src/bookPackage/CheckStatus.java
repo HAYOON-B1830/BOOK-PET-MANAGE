@@ -23,16 +23,12 @@ import javax.swing.table.DefaultTableModel;
 public class CheckStatus extends JFrame {
 	/* 사용자단 내 대출/반납현황 조회 */
 
-	// JTable *******테이블 도서번호를 넣어야할지 고민해봐야함/ 도서코드로 해서 나중에 입력가능하게? 아닌데**********
-//	Object ob[][] = new Object[0][5]; // 데이터 열 표시
-	Object rent_ob[][] = new Object[0][5];
-	Object reserve_ob[][] = new Object[0][4];
-	DefaultTableModel rent_model, reserve_model; // 데이터 저장부분
-	JTable rent_booktable, reserve_booktable;
-	JScrollPane rent_scrollPane, reserve_scrollPane;
-	// 도서번호->도서명으로
+	// JTable
+	Object rent_ob[][] = new Object[0][5]; // 데이터 열 표시
+	DefaultTableModel rent_model; // 데이터 저장부분
+	JTable rent_booktable;
+	JScrollPane rent_scrollPane;
 	String rent_str[] = { "대출번호", "도서명", "대출회원", "대출일자", "반납일자" }; // 대출테이블 컬럼
-	// String reserve_str[] = { "예약번호", "도서번호", "예약회원", "예약일자" }; // 예약테이블 컬럼
 
 	// DB연동
 	Connection con = null;
@@ -91,11 +87,6 @@ public class CheckStatus extends JFrame {
 		rentLabel.setBounds(39, 92, 46, 40);
 		getContentPane().add(rentLabel);
 
-//		JLabel reserLabel = new JLabel("예약");
-//		reserLabel.setFont(new Font("굴림", Font.PLAIN, 20));
-//		reserLabel.setBounds(39, 262, 46, 40);
-//		getContentPane().add(reserLabel);
-
 		////////////////////////////////////////////////////////////////////
 		/* 테이블 */
 		// rent테이블 출력
@@ -109,18 +100,6 @@ public class CheckStatus extends JFrame {
 
 		connect();
 		rent_select();
-
-//		// reserve테이블 출력
-//		reserve_model = new DefaultTableModel(reserve_ob, reserve_str);
-//		reserve_booktable = new JTable(reserve_model);
-//
-//		reserve_scrollPane = new JScrollPane(reserve_booktable);
-//		getContentPane().add("Center", reserve_scrollPane);
-//		reserve_scrollPane.setBounds(39, 302, 705, 121);
-//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//		connect();
-//		reserve_select();
 
 		/////////////////////////////////////////////////////////////////
 
@@ -166,8 +145,15 @@ public class CheckStatus extends JFrame {
 	// String rent_str[] = { "도서명", "대출일자", "반납예정일자" }; // 대출테이블 컬럼
 	public void rent_select() {
 		try {
+			// 로그인한 회원id(Login.java) 가져옴
+			// 다른 패키지에 있는 Login클래스의 idText 가져옴
+//			Login lo = new Login();
+//			String memberid = lo.idText.getText();
+
 			// 실행할 sql문장 작성
 			String sql = "select * from rent where rent_user_id = 'hyuna2398' order by return_date";
+			// String sql = "select * from rent where rent_user_id =\'" + memberid + "\'
+			// order by return_date";
 			stmt = con.prepareStatement(sql);
 			result = stmt.executeQuery(sql); // select문장
 
@@ -188,34 +174,6 @@ public class CheckStatus extends JFrame {
 			}
 		} catch (Exception e) {
 			System.out.println("rent_select() 실행오류 : " + e);
-		}
-	}
-
-// 누가 무슨 책 빌렸고, 몇 권을 빌린 것인지->대출 테이블에서 사용자 아이디 검색하는 쿼리
-
-	// String reserve_str[] = { "도서명", "예약여부 ", "반납예정일자" }; // 예약테이블 컬럼
-	public void reserve_select() {
-		try {
-			// 실행할 sql문장 작성
-			String sql = "select * from reserve";
-			stmt = con.prepareStatement(sql);
-			result = stmt.executeQuery(sql); // select문장
-
-			// books테이블에서 불러오기
-			while (result.next()) {
-				int no = result.getInt("RESERVE_NUMBER");
-				String book = result.getString("RESERVE_BOOK_NUMBER"); // 도서명 출력으로 변경
-				String user = result.getString("RESERVE_USER_ID");
-				String reservedate = result.getString("RESERVE_DATE");
-
-				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
-				Object data[] = { no, book, user, reservedate };
-				reserve_model.addRow(data);
-				System.out.println(no + ", " + book + ", " + user + ", " + reservedate);// 콘솔출력
-
-			}
-		} catch (Exception e) {
-			System.out.println("reserve_select() 실행오류 : " + e);
 		}
 	}
 

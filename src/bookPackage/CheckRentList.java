@@ -20,14 +20,11 @@ import javax.swing.table.DefaultTableModel;
 public class CheckRentList extends JFrame {
 	/* 관리자단 대출목록 조회 */
 
-	// JTable *******테이블 도서번호를 넣어야할지 고민해봐야함/ 도서코드로 해서 나중에 입력가능하게? 아닌데**********
-//	Object ob[][] = new Object[0][5]; // 데이터 열 표시
-	Object rent_ob[][] = new Object[0][5];
-	Object reserve_ob[][] = new Object[0][4];
-	DefaultTableModel rent_model, reserve_model; // 데이터 저장부분
-	JTable rent_booktable, reserve_booktable;
-	JScrollPane rent_scrollPane, reserve_scrollPane;
-	// 도서번호->도서명으로
+	// JTable
+	Object rent_ob[][] = new Object[0][5]; // 데이터 열 표시
+	DefaultTableModel rent_model; // 데이터 저장부분
+	JTable rent_booktable;
+	JScrollPane rent_scrollPane;
 	String rent_str[] = { "대출번호", "도서명", "대출회원", "대출일자", "반납일자" }; // 대출테이블 컬럼
 
 	// DB연동

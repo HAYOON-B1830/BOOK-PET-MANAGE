@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+//!!변경사항 idText의 접근지정자 public으로 변경함
 //회원기능 완성되면 rent_inserst()수정해야함
 
 public class BookList extends JFrame implements ActionListener, TableCellRenderer {
@@ -31,7 +32,7 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 
 	JLabel noLabel, titleLabel, authorLabel, publisherLabel; // 제목, 저자, 출판사
 	JTextField noText, titleText, authorText, publisherText;
-	JButton inputsearchbtn, homebtn, rentbtn, reservebtn;
+	JButton searchbtn, homebtn, rentbtn, reservebtn;
 	JPanel panel; // JLabel, JTextArea 부착
 	String rentable;
 	int cnt;
@@ -96,18 +97,6 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		returnbtn.setBounds(425, 32, 80, 40);
 		getContentPane().add(returnbtn);
 
-//		JButton reservebtn = new JButton("예약");
-//		reservebtn.setFont(new Font("굴림", Font.PLAIN, 15));
-//		reservebtn.setBounds(425, 32, 80, 40);
-//		getContentPane().add(reservebtn);
-
-//		reservebtn.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				connect();
-//				reserve();
-//			}
-//		});
-
 		JButton homebtn = new JButton("HOME");
 		homebtn.setFont(new Font("굴림", Font.PLAIN, 15));
 		homebtn.setBounds(609, 32, 135, 40);
@@ -169,12 +158,12 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		getContentPane().add(publisherText);
 		publisherText.setColumns(10);
 
-		JButton inputsearchbtn = new JButton("검색");
-		inputsearchbtn.setFont(new Font("굴림", Font.PLAIN, 15));
-		inputsearchbtn.setBounds(517, 32, 80, 40);
-		getContentPane().add(inputsearchbtn);
+		JButton searchbtn = new JButton("검색");
+		searchbtn.setFont(new Font("굴림", Font.PLAIN, 15));
+		searchbtn.setBounds(517, 32, 80, 40);
+		getContentPane().add(searchbtn);
 
-		inputsearchbtn.addActionListener(new ActionListener() {
+		searchbtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				connect();
 				search();
@@ -221,6 +210,14 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 							turn();
 						}
 					});
+
+					searchbtn.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							connect();
+							search();
+						}
+					});
+
 				}
 			}
 		});
@@ -244,13 +241,14 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// 버튼에 ActionListenr 등록
-		inputsearchbtn.addActionListener(this);
+		searchbtn.addActionListener(this);
 		homebtn.addActionListener(this);
 		rentbtn.addActionListener(this);
 		clearbtn.addActionListener(this);
 		// reservebtn.addActionListener(this);
 
 		// 텍스트필드에 addActionLinstener 등록
+		noText.addActionListener(this);
 		titleText.addActionListener(this);
 		authorText.addActionListener(this);
 		publisherText.addActionListener(this);
@@ -284,7 +282,7 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 	public void actionPerformed(ActionEvent e) {
 //		ActionEvent 발생 시 실행되는 메소드 -> 버튼 클릭시, 입력 칸에 입력 후 엔터키를 쳤을 때
 		Object o = e.getSource(); // 이벤트가 발생한 객체 리턴
-		if (o == inputsearchbtn) { // 검색
+		if (o == searchbtn) { // 검색
 			connect();
 			search();
 		} else if (o == rentbtn) { // 대출
@@ -363,102 +361,108 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 				String author = result.getString("AUTHOR");
 				String publisher = result.getString("PUBLISHER");
 				String year = result.getString("PUBLISHER_YEAR");
+				String able = result.getString("IS_RENT");
 
 				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
-				Object data[] = { no, title, author, publisher, year };
+				Object data[] = { no, title, author, publisher, year, able };
 				model.addRow(data);
-				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year);// 콘솔출력
+				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year + ", " + able);// 콘솔출력
 			}
 
 		} catch (Exception e) {
 			System.out.println("search() 실행오류 : " + e);
 		}
 
-		////////////////////////////////////////////
-		/* 2.도서번호로 검색 */
-		try {
-			// 실행할 sql문장 작성
-			model.setNumRows(0);
-
-			String no_searchStr = "select * from books WHERE BOOK_NO LIKE '%" + noText.getText() + "%'";
-			stmt = con.prepareStatement(no_searchStr);
-			result = stmt.executeQuery(no_searchStr);
-
-			// books테이블에서 불러오기
-			while (result.next()) {
-				String no = result.getString("BOOK_NO");
-				String title = result.getString("BOOK_TITLE");
-				String author = result.getString("AUTHOR");
-				String publisher = result.getString("PUBLISHER");
-				String year = result.getString("PUBLISHER_YEAR");
-
-				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
-				Object data[] = { no, title, author, publisher, year };
-				model.addRow(data);
-				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year);// 콘솔출력
-			}
-
-		} catch (Exception e) {
-			System.out.println("search() 실행오류 : " + e);
-		}
-
-		//////////////////////////////////////////////////////////
-		/* 3.저자로 검색 */
-		try {
-			// 실행할 sql문장 작성
-			model.setNumRows(0);
-
-			String author_searchStr = "select * from books WHERE AUTHOR LIKE '%" + authorText.getText() + "%'";
-			stmt = con.prepareStatement(author_searchStr);
-			result = stmt.executeQuery(author_searchStr);
-
-			// books테이블에서 불러오기
-			while (result.next()) {
-				String no = result.getString("BOOK_NO");
-				String title = result.getString("BOOK_TITLE");
-				String author = result.getString("AUTHOR");
-				String publisher = result.getString("PUBLISHER");
-				String year = result.getString("PUBLISHER_YEAR");
-
-				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
-				Object data[] = { no, title, author, publisher, year };
-				model.addRow(data);
-				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year);// 콘솔출력
-			}
-
-		} catch (Exception e) {
-			System.out.println("search() 실행오류 : " + e);
-		}
-
-		//////////////////////////////////////////////////////////
-		/* 4.출판사로 검색 */
-		try {
-			// 실행할 sql문장 작성
-			model.setNumRows(0);
-
-			String publisher_searchStr = "select * from books WHERE PUBLISHER LIKE '%" + publisherText.getText() + "%'";
-			stmt = con.prepareStatement(publisher_searchStr);
-			result = stmt.executeQuery(publisher_searchStr);
-
-			// books테이블에서 불러오기
-			while (result.next()) {
-				String no = result.getString("BOOK_NO");
-				String title = result.getString("BOOK_TITLE");
-				String author = result.getString("AUTHOR");
-				String publisher = result.getString("PUBLISHER");
-				String year = result.getString("PUBLISHER_YEAR");
-
-				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
-				Object data[] = { no, title, author, publisher, year };
-				model.addRow(data);
-				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year);// 콘솔출력
-			}
-
-		} catch (Exception e) {
-			System.out.println("search() 실행오류 : " + e);
-		}
+//		////////////////////////////////////////////
+//		/* 2.도서번호로 검색 */
+//		try {
+//			// 실행할 sql문장 작성
+//			model.setNumRows(0);
+//
+//			String no_searchStr = "select * from books WHERE BOOK_NO LIKE '%" + noText.getText() + "%'";
+//			stmt = con.prepareStatement(no_searchStr);
+//			result = stmt.executeQuery(no_searchStr);
+//
+//			// books테이블에서 불러오기
+//			while (result.next()) {
+//				String no = result.getString("BOOK_NO");
+//				String title = result.getString("BOOK_TITLE");
+//				String author = result.getString("AUTHOR");
+//				String publisher = result.getString("PUBLISHER");
+//				String year = result.getString("PUBLISHER_YEAR");
+//				String able = result.getString("IS_RENT");
+//
+//				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
+//				Object data[] = { no, title, author, publisher, year, able };
+//				model.addRow(data);
+//				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year + ", " + able);// 콘솔출력
+//			}
+//
+//		} catch (Exception e) {
+//			System.out.println("search() 실행오류 : " + e);
+//		}
+//
+//		//////////////////////////////////////////////////////////
+//		/* 3.저자로 검색 */
+//		try {
+//			// 실행할 sql문장 작성
+//			model.setNumRows(0);
+//
+//			String author_searchStr = "select * from books WHERE AUTHOR LIKE '%" + authorText.getText() + "%'";
+//			stmt = con.prepareStatement(author_searchStr);
+//			result = stmt.executeQuery(author_searchStr);
+//
+//			// books테이블에서 불러오기
+//			while (result.next()) {
+//				String no = result.getString("BOOK_NO");
+//				String title = result.getString("BOOK_TITLE");
+//				String author = result.getString("AUTHOR");
+//				String publisher = result.getString("PUBLISHER");
+//				String year = result.getString("PUBLISHER_YEAR");
+//				String able = result.getString("IS_RENT");
+//
+//				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
+//				Object data[] = { no, title, author, publisher, year, able };
+//				model.addRow(data);
+//				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year + ", " + able);// 콘솔출력
+//			}
+//
+//		} catch (Exception e) {
+//			System.out.println("search() 실행오류 : " + e);
+//		}
+//
+//		//////////////////////////////////////////////////////////
+//		/* 4.출판사로 검색 */
+//		try {
+//			// 실행할 sql문장 작성
+//			model.setNumRows(0);
+//
+//			String publisher_searchStr = "select * from books WHERE PUBLISHER LIKE '%" + publisherText.getText() + "%'";
+//			stmt = con.prepareStatement(publisher_searchStr);
+//			result = stmt.executeQuery(publisher_searchStr);
+//
+//			// books테이블에서 불러오기
+//			while (result.next()) {
+//				String no = result.getString("BOOK_NO");
+//				String title = result.getString("BOOK_TITLE");
+//				String author = result.getString("AUTHOR");
+//				String publisher = result.getString("PUBLISHER");
+//				String year = result.getString("PUBLISHER_YEAR");
+//				String able = result.getString("IS_RENT");
+//
+//				// object[]를 생성저장 해 model에 추가->JTable에서 결과 확인
+//				Object data[] = { no, title, author, publisher, year, able };
+//				model.addRow(data);
+//				System.out.println(no + ", " + title + ", " + author + ", " + publisher + ", " + year + ", " + able);// 콘솔출력
+//			}
+//
+//		} catch (Exception e) {
+//			System.out.println("search() 실행오류 : " + e);
+//		}
 
 	}
+
+	///////////////////////////////////////////////////////////////////////////
 
 	public void rent() { // 도서 클릭 후 대출 버튼 누르면 (도서 클릭 시 정보 읽는)
 		// 1. 대출 버튼 누르면
@@ -481,6 +485,8 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	/* 대출 */
 	public void rent_insert() {
 		try {
 
@@ -489,10 +495,20 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 			Calendar now = Calendar.getInstance();
 			String rtime = sdf.format(now.getTime());
 
+			// 로그인한 회원id(Login.java) 가져옴
+			// 다른 패키지에 있는 Login클래스ㅇ 변수 가져옴
+//			Login lo = new Login();
+//			String memberid = lo.idText.getText();
+
 			// 책제목 자동입력된 거 가져와서
 			String insertno = noText.getText();
 			rent_cnt = "R" + insertno;
 			String inserttitle = titleText.getText();
+
+//			String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date) values(\'"
+//					+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , \'" + memberid + "\', \'" + rtime
+//					+ "\')on duplicate key update rent_date=\'" + rtime + "\', return_date=NULL";
+//			// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
 
 			String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date) values(\'"
 					+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , 'hyuna2398', \'" + rtime
@@ -527,6 +543,9 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 			System.out.println("books_update() 실행오류 : " + e);
 		}
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+	/* 반납 */
 
 	public void rent_add() {
 		try {
