@@ -32,7 +32,7 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 
 	JLabel noLabel, titleLabel, authorLabel, publisherLabel; // 제목, 저자, 출판사
 	JTextField noText, titleText, authorText, publisherText;
-	JButton searchbtn, homebtn, rentbtn, reservebtn;
+	JButton searchbtn, homebtn, rentbtn;
 	JPanel panel; // JLabel, JTextArea 부착
 	String rentable;
 	int cnt;
@@ -77,7 +77,7 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 
 		JButton clearbtn = new JButton("X");
 		clearbtn.setFont(new Font("굴림", Font.PLAIN, 15));
-		clearbtn.setBounds(241, 32, 80, 40);
+		clearbtn.setBounds(296, 32, 50, 40);
 		getContentPane().add(clearbtn);
 
 		clearbtn.addActionListener(new ActionListener() {
@@ -89,17 +89,17 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 
 		JButton rentbtn = new JButton("대출");
 		rentbtn.setFont(new Font("굴림", Font.PLAIN, 15));
-		rentbtn.setBounds(333, 32, 80, 40);
+		rentbtn.setBounds(358, 32, 80, 40);
 		getContentPane().add(rentbtn);
 
 		JButton returnbtn = new JButton("반납");
 		returnbtn.setFont(new Font("굴림", Font.PLAIN, 15));
-		returnbtn.setBounds(425, 32, 80, 40);
+		returnbtn.setBounds(450, 32, 80, 40);
 		getContentPane().add(returnbtn);
 
 		JButton homebtn = new JButton("HOME");
 		homebtn.setFont(new Font("굴림", Font.PLAIN, 15));
-		homebtn.setBounds(609, 32, 135, 40);
+		homebtn.setBounds(664, 32, 80, 40);
 		getContentPane().add(homebtn);
 
 		homebtn.addActionListener(new ActionListener() {
@@ -158,9 +158,9 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		getContentPane().add(publisherText);
 		publisherText.setColumns(10);
 
-		JButton searchbtn = new JButton("검색");
-		searchbtn.setFont(new Font("굴림", Font.PLAIN, 15));
-		searchbtn.setBounds(517, 32, 80, 40);
+		JButton searchbtn = new JButton("도서명 검색");
+		searchbtn.setFont(new Font("굴림", Font.PLAIN, 12));
+		searchbtn.setBounds(542, 32, 110, 40);
 		getContentPane().add(searchbtn);
 
 		searchbtn.addActionListener(new ActionListener() {
@@ -245,7 +245,6 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		homebtn.addActionListener(this);
 		rentbtn.addActionListener(this);
 		clearbtn.addActionListener(this);
-		// reservebtn.addActionListener(this);
 
 		// 텍스트필드에 addActionLinstener 등록
 		noText.addActionListener(this);
@@ -345,7 +344,7 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 	// *버튼 누르면 검색결과 나옴*//
 	// 도서번호,도서명,저자,출판사로 검색가능
 	public void search() {
-		/* 1.도서명으로 검색 */
+		/* 도서명으로 검색 */
 		try {
 			// 실행할 sql문장 작성
 			model.setNumRows(0);
@@ -591,25 +590,6 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 			System.out.println("books_update_able() 실행오류 : " + e);
 		}
 	}
-
-//	public void reserve() { //예약하기
-//	try {
-//		String sql = "UPDATE books SET IS_RENT='대출불가능'"+"WHERE BOOK_TITLE='"+titleText.getText()+"';";
-//		stmt = con.prepareStatement(sql);
-//		result = stmt.executeQuery(sql); // select문장
-//
-//	}catch (SQLException e1) {
-//		e1.printStackTrace();
-//	}
-//}
-
-//	public static String getCurrentDataTime() {
-//		Date today = new Date();
-//		Locale currentLocale = new Locale("KOREAN", "KOREA");
-//		String pattern = "yyyyMMddHHmmss"; // hhmmss로 시간,분,초만 뽑기도 가능
-//		SimpleDateFormat formatter = new SimpleDateFormat(pattern, currrentLocale);
-//		return formatter.format(today);
-//	}
 
 	public void count() {
 		// 기본정보 출력

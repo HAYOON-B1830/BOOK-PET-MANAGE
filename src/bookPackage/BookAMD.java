@@ -67,14 +67,14 @@ public class BookAMD extends JFrame implements ActionListener {
 		StringLabel.setBounds(39, 32, 160, 50);
 		getContentPane().add(StringLabel);
 
-		JButton searchbtn = new JButton("검색");
+		JButton searchbtn = new JButton("도서명 검색");
 		searchbtn.setFont(new Font("굴림", Font.PLAIN, 12));
-		searchbtn.setBounds(390, 32, 60, 40);
+		searchbtn.setBounds(420, 32, 110, 40);
 		getContentPane().add(searchbtn);
 
 		JButton homebtn = new JButton("HOME");
 		homebtn.setFont(new Font("굴림", Font.PLAIN, 15));
-		homebtn.setBounds(609, 32, 135, 40);
+		homebtn.setBounds(664, 32, 80, 40);
 		getContentPane().add(homebtn);
 
 		connect();
@@ -93,6 +93,7 @@ public class BookAMD extends JFrame implements ActionListener {
 		homebtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				new BookManagement();
+				setVisible(false);
 			}
 		});
 
@@ -157,15 +158,15 @@ public class BookAMD extends JFrame implements ActionListener {
 		yearText.setColumns(10);
 
 		JButton insertbtn = new JButton("추가");
-		insertbtn.setBounds(174, 32, 60, 40);
+		insertbtn.setBounds(204, 32, 60, 40);
 		getContentPane().add(insertbtn);
 
 		JButton deletebtn = new JButton("삭제");
-		deletebtn.setBounds(246, 32, 60, 40);
+		deletebtn.setBounds(276, 32, 60, 40);
 		getContentPane().add(deletebtn);
 
 		JButton updatebtn = new JButton("수정");
-		updatebtn.setBounds(318, 32, 60, 40);
+		updatebtn.setBounds(348, 32, 60, 40);
 		getContentPane().add(updatebtn);
 
 		insertbtn.addActionListener(new ActionListener() {
@@ -240,29 +241,16 @@ public class BookAMD extends JFrame implements ActionListener {
 		scrollPane.setBounds(39, 142, 705, 290);
 
 		JButton rentlistbtn = new JButton("대출목록조회");
-		rentlistbtn.setBounds(462, 32, 135, 40);
+		rentlistbtn.setBounds(542, 32, 110, 40);
 		getContentPane().add(rentlistbtn);
 
 		rentlistbtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
 				new CheckRentList();
+				setVisible(false);
 			}
 		});
-
-//		JButton reservelistbtn = new JButton("예약목록조회");
-//		reservelistbtn.setBounds(483, 49, 114, 23);
-//		getContentPane().add(reservelistbtn);
-//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//		reservelistbtn.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//
-//				new CheckReserveList();
-//			}
-//		});
-
-		// setVisible(true);
 
 		/////////////////////////////////////////////////////////
 		/* 이벤트 등록 */
@@ -279,9 +267,6 @@ public class BookAMD extends JFrame implements ActionListener {
 		authorText.addActionListener(this);
 		publisherText.addActionListener(this);
 		yearText.addActionListener(this);
-
-//		// 테이블에 MouseListener 등록
-//		booktable.addMouseListener(this);
 
 		///////////////////////////////////////////////////////
 
