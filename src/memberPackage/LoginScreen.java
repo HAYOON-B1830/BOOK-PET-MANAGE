@@ -19,7 +19,7 @@ public class LoginScreen extends JFrame {
 	JPanel panel = new JPanel();
 	JLabel idL = new JLabel("ID : ");
 	JLabel pwL = new JLabel("PASSWORD : ");
-	JTextField id = new JTextField(10);
+	public static JTextField id = new JTextField(10);
 	JPasswordField pw = new JPasswordField(10);
 	JButton loginBtn = new JButton("로그인");
 	JButton joinBtn = new JButton("회원가입");

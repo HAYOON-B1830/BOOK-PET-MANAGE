@@ -17,12 +17,15 @@ import java.util.Calendar;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+
+import memberPackage.LoginScreen;
 
 //!!변경사항 idText의 접근지정자 public으로 변경함
 //회원기능 완성되면 rent_inserst()수정해야함
@@ -469,6 +472,8 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		// books테이블 대출중 변경
 		books_update(); // books테이블 대출중 변경
 		rent_insert(); // rent테이블에 레코드 추가
+		JOptionPane.showMessageDialog(null, "대출되었습니다.");
+
 		model.setNumRows(0);
 		select();
 	}
@@ -479,6 +484,7 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		// books 테이블 대출가능 변경
 		books_update_able(); // books테이블 대출가능 변경
 		rent_add(); // rent테이블에 레코드 추가
+		JOptionPane.showMessageDialog(null, "반납되었습니다.");
 		model.setNumRows(0);
 		select();
 
@@ -488,31 +494,30 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 	/* 대출 */
 	public void rent_insert() {
 		try {
-
 			// 현재날짜 불러옴
 			SimpleDateFormat sdf = new SimpleDateFormat("YYYY.MM.dd");
 			Calendar now = Calendar.getInstance();
 			String rtime = sdf.format(now.getTime());
 
-			// 로그인한 회원id(Login.java) 가져옴
-			// 다른 패키지에 있는 Login클래스ㅇ 변수 가져옴
-//			Login lo = new Login();
-//			String memberid = lo.idText.getText();
+			// 로그인한 회원id(LoginScreen.java) 가져옴
+			// 다른 패키지에 있는 LoginScreen클래스 변수 가져옴
+			String uid = LoginScreen.id.getText();
+			// String memberid = LoginScreen.id.getText();
 
 			// 책제목 자동입력된 거 가져와서
 			String insertno = noText.getText();
 			rent_cnt = "R" + insertno;
 			String inserttitle = titleText.getText();
 
-//			String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date) values(\'"
-//					+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , \'" + memberid + "\', \'" + rtime
-//					+ "\')on duplicate key update rent_date=\'" + rtime + "\', return_date=NULL";
-//			// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
-
 			String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date) values(\'"
-					+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , 'hyuna2398', \'" + rtime
+					+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , \'" + uid + "\', \'" + rtime
 					+ "\')on duplicate key update rent_date=\'" + rtime + "\', return_date=NULL";
 			// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
+
+//			String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date) values(\'"
+//					+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , 'hyuna2398', \'" + rtime
+//					+ "\')on duplicate key update rent_date=\'" + rtime + "\', return_date=NULL";
+//			// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
 
 			stmt = con.prepareStatement(rentsql);
 			int rentinsert = stmt.executeUpdate();

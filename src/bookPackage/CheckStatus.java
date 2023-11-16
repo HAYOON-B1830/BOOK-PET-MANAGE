@@ -17,6 +17,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import memberPackage.LoginScreen;
+
 //사용자화면-로그인한 계정의 대출현황 출력(확인)
 //추후수정사항: 로그인한 계정id받아와서 select시 사용
 
@@ -145,15 +147,15 @@ public class CheckStatus extends JFrame {
 	// String rent_str[] = { "도서명", "대출일자", "반납예정일자" }; // 대출테이블 컬럼
 	public void rent_select() {
 		try {
-			// 로그인한 회원id(Login.java) 가져옴
-			// 다른 패키지에 있는 Login클래스의 idText 가져옴
-//			Login lo = new Login();
-//			String memberid = lo.idText.getText();
+
+			// 로그인한 회원id(LoginScreen.java) 가져옴
+			// 다른 패키지에 있는 LoginScreen클래스 변수 가져옴
+			String uid = LoginScreen.id.getText();
 
 			// 실행할 sql문장 작성
-			String sql = "select * from rent where rent_user_id = 'hyuna2398' order by return_date";
-			// String sql = "select * from rent where rent_user_id =\'" + memberid + "\'
-			// order by return_date";
+//			String sql = "select * from rent where rent_user_id = 'hyuna2398' order by return_date";
+			String sql = "select * from rent where rent_user_id =\'" + uid + "\' order by return_date";
+
 			stmt = con.prepareStatement(sql);
 			result = stmt.executeQuery(sql); // select문장
 
