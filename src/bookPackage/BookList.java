@@ -481,9 +481,8 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		// 2. 반납 버튼
 		// rent테이블에 반납시간 추가
 		// books 테이블 대출가능 변경
-		books_update_able(); // books테이블 대출가능 변경
+		// books_update_able(); // books테이블 대출가능 변경
 		rent_add(); // rent테이블에 레코드 추가
-		JOptionPane.showMessageDialog(null, "반납되었습니다.");
 		model.setNumRows(0);
 		select();
 
@@ -537,7 +536,7 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 
 				String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date, is_return) values(\'"
 						+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , \'" + uid + "\', \'" + rtime
-						+ "\', '0')on duplicate key update rent_date=\'" + rtime
+						+ "\', '0')on duplicate key update rent_user_id=\'" + uid + "\', rent_date=\'" + rtime
 						+ "\', return_date=NULL, is_return='0'";
 				// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
 
@@ -552,7 +551,7 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 
 				books_update();
 				JOptionPane.showMessageDialog(null, "대출되었습니다.");
-			} else if (rent_init(insertno) == false) {// 대출중인 도서는 대출못하게
+			} else {// 대출중인 도서는 대출못하게
 				JOptionPane.showMessageDialog(null, "대출 중인 도서입니다.");
 			}
 
@@ -583,6 +582,29 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 
 	//////////////////////////////////////////////////////////////////////////
 	/* 반납 */
+	// 대출한 회원에게만 반납이 되게
+	public boolean turn_init(String m) {
+		boolean flag = false;
+		try { // 해당도서의 반납기록이 있는지 확인
+			String sql = "select RENT_USER_ID from rent where RENT_BOOK_NUMBER = \'" + m + "\'";
+			stmt = con.prepareStatement(sql);
+			result = stmt.executeQuery(sql); // select문장
+
+			String uid = LoginScreen.id.getText();
+
+			while (result.next()) {
+				if (uid.equals(result.getString("RENT_USER_ID"))) {// 대출한 사용자id와 로그인한 id가 일치
+					flag = true;
+				} else {// 대출한 사용자id와 로그인한 id가 불일치
+					flag = false;
+				}
+			}
+		} catch (Exception e) {
+			flag = false;
+			System.out.println("turn_init() 실행오류 : " + e);
+		}
+		return flag;
+	}
 
 	public void rent_add() {
 		try {
@@ -596,13 +618,21 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 			Calendar now = Calendar.getInstance();
 			String rtime = sdf.format(now.getTime());
 
-			// rent테이블에 추가
-			String rentsql = "UPDATE rent SET return_date=\'" + rtime + "\', is_return='1' WHERE rent_book_number=\'"
-					+ insertno + "\'";
+			if (turn_init(insertno) == true) {
 
-			stmt = con.prepareStatement(rentsql);
-			int rentinsert = stmt.executeUpdate();
-			System.out.println("rent삽입()성공 유무 : " + rentinsert);
+				// rent테이블에 추가
+				String rentsql = "UPDATE rent SET return_date=\'" + rtime
+						+ "\', is_return='1' WHERE rent_book_number=\'" + insertno + "\'";
+
+				stmt = con.prepareStatement(rentsql);
+				int rentinsert = stmt.executeUpdate();
+				System.out.println("rent삽입()성공 유무 : " + rentinsert);
+
+				books_update_able();
+				JOptionPane.showMessageDialog(null, "반납되었습니다.");
+			} else if (rent_init(insertno) == false) {// 다른 회원의 대출도서인 경우
+				JOptionPane.showMessageDialog(null, "다른 회원의 대출도서입니다.");
+			}
 
 		} catch (Exception e) {
 			System.out.println("rent_add() 실행오류 : " + e);
