@@ -472,10 +472,12 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 		// books테이블 대출중 변경
 		books_update(); // books테이블 대출중 변경
 		rent_insert(); // rent테이블에 레코드 추가
-		JOptionPane.showMessageDialog(null, "대출되었습니다.");
-
 		model.setNumRows(0);
 		select();
+
+		// 당장 해결해야하는 문제
+		// A회원이 대출중인 도서를 B회원이 대출할 수 있음
+
 	}
 
 	public void turn() { // 반납버튼 구현안됨********************
@@ -491,6 +493,27 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 	}
 
 	//////////////////////////////////////////////////////////////////////////
+	public boolean rent_init(String m) {
+		boolean flag = false;
+		try { // 해당도서의 반납기록이 있는지 확인
+			String sql = "select * from rent where RENT_BOOK_NUMBER = \'" + m + "\'";
+			stmt = con.prepareStatement(sql);
+			result = stmt.executeQuery(sql); // select문장
+
+			while (result.next()) {
+				if (result.getInt("is_return") == 0) {
+					flag = false;// 반납기록이 없음->대출불가
+				} else if ((result.getInt("is_return") == 1)) {
+					flag = true; // 반납기록이 있음->대출가능
+				}
+			}
+		} catch (Exception e) {
+			flag = false;
+			System.out.println("rent_init() 실행오류 : " + e);
+		}
+		return flag;
+	}
+
 	/* 대출 */
 	public void rent_insert() {
 		try {
@@ -509,22 +532,29 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 			rent_cnt = "R" + insertno;
 			String inserttitle = titleText.getText();
 
-			String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date) values(\'"
-					+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , \'" + uid + "\', \'" + rtime
-					+ "\')on duplicate key update rent_date=\'" + rtime + "\', return_date=NULL";
-			// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
+			if (rent_init(insertno)) {
+				String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date, is_return) values(\'"
+						+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , \'" + uid + "\', \'" + rtime
+						+ "\', '0')on duplicate key update rent_user_id=\'" + uid + "\', rent_date=\'" + rtime
+						+ "\', return_date=NULL";
+				// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
 
-//			String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date) values(\'"
-//					+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , 'hyuna2398', \'" + rtime
-//					+ "\')on duplicate key update rent_date=\'" + rtime + "\', return_date=NULL";
-//			// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
+//				String rentsql = "insert into rent(rent_number, rent_book_number, rent_book_title, rent_user_id, rent_date) values(\'"
+//						+ rent_cnt + "\', \'" + insertno + "\', \'" + inserttitle + "\' , 'hyuna2398', \'" + rtime
+//						+ "\')on duplicate key update rent_date=\'" + rtime + "\', return_date=NULL";
+//				// IF. 키가 중복될 경우 대출일자 현재일자로 업데이트, 반납일자는 NULL값으로
 
-			stmt = con.prepareStatement(rentsql);
-			int rentinsert = stmt.executeUpdate();
-			System.out.println("rent삽입()성공 유무 : " + rentinsert);
+				stmt = con.prepareStatement(rentsql);
+				int rentinsert = stmt.executeUpdate();
+				System.out.println("rent삽입()성공 유무 : " + rentinsert);
+				JOptionPane.showMessageDialog(null, "대출되었습니다.");
+			} else {
+				JOptionPane.showMessageDialog(null, "대출 중인 도서입니다.");
+			}
 
 		} catch (Exception e) {
 			System.out.println("rent_insert() 실행오류 : " + e);
+			JOptionPane.showMessageDialog(null, "대출 중인 도서입니다.");
 		}
 	}
 
@@ -564,8 +594,8 @@ public class BookList extends JFrame implements ActionListener, TableCellRendere
 			String rtime = sdf.format(now.getTime());
 
 			// rent테이블에 추가
-			String rentsql = "UPDATE rent SET return_date=\'" + rtime + "\' WHERE rent_book_number=\'" + insertno
-					+ "\'";
+			String rentsql = "UPDATE rent SET return_date=\'" + rtime + "\', is_return='1' WHERE rent_book_number=\'"
+					+ insertno + "\'";
 
 			stmt = con.prepareStatement(rentsql);
 			int rentinsert = stmt.executeUpdate();
